@@ -8,8 +8,8 @@ CXX('g++')
 CXXFLAGS('-D_GNU_SOURCE -D__STDC_LIMIT_MACROS -g -pipe -W -Wall -fPIC -fno-omit-frame-pointer')
 LDFLAGS('-levent -ldl -lpthread -lm -lrt')
 
-#DEP('gflags', '1.0.0')
-#DEP('glog', '1.0.0')
+DEP('gflags', '1.0.0')
+DEP('glog', '1.0.0')
 DEP('thrift', '1.0.0')
 
 sources = GLOB('./*.cpp ./Thriftfiles/*.thrift')
