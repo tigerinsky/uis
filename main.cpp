@@ -13,8 +13,9 @@ namespace tis {
 
 DEFINE_int32(server_port, 6060, "ms server port");
 DEFINE_int32(server_thread_num, 2, "thread pool server handler thread num");
+DEFINE_int32(machine, 1, "machine id");
 DEFINE_int32(topic_num, 1, "topic num");
-DEFINE_string(topic_names, "", "topic names delimited by ;");
+DEFINE_string(topic_names, "default", "topic names delimited by ;");
 
 }
 

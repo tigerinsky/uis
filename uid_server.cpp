@@ -44,6 +44,10 @@ int UidServer::init() {
 int UidServer::run() {
     // processor
     shared_ptr<UidServerHandler> handler(new UidServerHandler());
+    if (0 != handler->init(FLAGS_machine, FLAGS_topic_num, FLAGS_topic_names)) {
+        LOG(ERROR) << "init uid server wrong\n";
+        return 1;
+    }
     shared_ptr<TProcessor> processor(new UidServerProcessor(handler));
 
     // protocol
@@ -61,7 +65,7 @@ int UidServer::run() {
                                                    FLAGS_server_port,
                                                    threadManager);
     if (NULL == _server) {
-        LOG(ERROR) << "uis create nonblocking server error";
+        LOG(ERROR) << "uis create nonblocking server error\n";
         return 1;
     }
     _server->serve();

@@ -37,6 +37,7 @@ struct topic_data {
         this->mutex_ = other.mutex_;
         this->sequence_ = other.sequence_;
         this->last_timestamp_ = other.last_timestamp_;
+        return *this;
     }
 };
 
@@ -46,11 +47,12 @@ class UidServerHandler : virtual public UidServerIf {
 public:
     UidServerHandler() {
         // Your initialization goes here
+        machine_ = 0;
         time_epoch_ = 1288834974657L;
         default_topic_.assign("default");
     }
 
-    int init(int topic_num, std::string& topic_names);
+    int init(int32_t machine, int topic_num, std::string& topic_names);
 
     int64_t get_id(const std::string& topic);
 
@@ -60,6 +62,7 @@ private:
 private:
     TOPIC_MAP topic_datas_;
     std::string default_topic_;
+    int32_t machine_;       //机器id
     uint64_t time_epoch_; 
 };
 
