@@ -15,18 +15,21 @@ int UidServerHandler::init(
         int topic_num,
         std::string& topic_names) {
     machine_ = machine;
+    int32_t topic_id = 0;
 
-    topic_data temp;
+    topic_data temp(topic_id++);
     topic_datas_[default_topic_] = temp;
     if (topic_names.size() <= 0) {
         return 0;
     }
 
+    LOG(INFO) << "topic_names:" << topic_names.c_str() << endl;
     string::size_type start = 0;
     string::size_type position = topic_names.find_first_of(';');
     while (topic_names.npos != position) {
         std::string topic(topic_names.substr(start, position - start));
-        topic_data temp;
+        LOG(INFO) << "topic:" << topic.c_str() << " topic_id:" << topic_id << endl;
+        topic_data temp(topic_id++);
         topic_datas_[topic] = temp;
         start = position + 1;
         position = topic_names.find_first_of(';', start);
@@ -34,7 +37,8 @@ int UidServerHandler::init(
 
     if (start < topic_names.npos) {
         std::string topic(topic_names.substr(start));
-        topic_data temp;
+        LOG(INFO) << "topic:" << topic.c_str() << " topic_id:" << topic_id << endl;
+        topic_data temp(topic_id++);
         topic_datas_[topic] = temp;
     }
 
@@ -52,7 +56,6 @@ uint64_t UidServerHandler::get_time() {
 
 int64_t UidServerHandler::get_id(const std::string& topic) {
     // Your implementation goes here
-    LOG(INFO) << "get_id" << endl;
     int64_t uid = 0L;
     TOPIC_MAP::iterator iter = topic_datas_.find(topic);
     if (topic_datas_.end() == iter) {
@@ -69,13 +72,19 @@ int64_t UidServerHandler::get_id(const std::string& topic) {
     } else {
         (iter->second).sequence_ = 0;
     }
+    //LOG(INFO) << "timestamp=" << timestamp << " machine=" << machine_ \
+    //    << " sequence=" << (iter->second).sequence_ \
+    //    << " topic_id=" << (iter->second).topic_id_ \
+    //    << " last_timestamp=" << (iter->second).last_timestamp_ << endl;
     (iter->second).last_timestamp_ = timestamp;
 
     uid = (timestamp - time_epoch_) << 22;
-    uid |= (machine_ & 0x3FF) << 12;
+    uid |= (machine_ & 0x1F) << 17;
+    uid |= ((iter->second).topic_id_ & 0X1F) << 12;
     uid |= (iter->second).sequence_;
 
     pthread_mutex_unlock(&((iter->second).mutex_));
+    LOG(INFO) << "[generate unique id]" << " topic=" << topic.c_str() << " uid="<< uid << endl;
     return uid;
 }
 

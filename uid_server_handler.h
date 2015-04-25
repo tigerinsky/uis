@@ -14,10 +14,18 @@ namespace tis {
 
 struct topic_data {
     pthread_mutex_t mutex_;
+    int32_t topic_id_;
     int32_t sequence_;
     uint64_t last_timestamp_;
 
     topic_data() {
+        pthread_mutex_init(&mutex_, NULL);
+        topic_id_ = 0;
+        sequence_ = 0;
+        last_timestamp_ = 0L;
+    }
+
+    explicit topic_data(int32_t topic_id): topic_id_(topic_id) {
         pthread_mutex_init(&mutex_, NULL);
         sequence_ = 0;
         last_timestamp_ = 0L;
@@ -29,12 +37,14 @@ struct topic_data {
 
     topic_data(const topic_data& other) {
         this->mutex_ = other.mutex_;
+        this->topic_id_ = other.topic_id_;
         this->sequence_ = other.sequence_;
         this->last_timestamp_ = other.last_timestamp_;
     }
     
     topic_data& operator = (const topic_data& other) {
         this->mutex_ = other.mutex_;
+        this->topic_id_ = other.topic_id_;
         this->sequence_ = other.sequence_;
         this->last_timestamp_ = other.last_timestamp_;
         return *this;
